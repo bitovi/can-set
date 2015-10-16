@@ -1,15 +1,9 @@
 var h = require("./helpers");
-var clause = require('./clause');
+var clause = require("./clause");
 var compare = require("./compare");
 
-// set.subset({foo: "bar"},{}) //-> true
-
-// algebra = new Alegbra()
-// algebra.getSubset()
-
-
 var Algebra = function(){
-	this.clauses = clauses = { where: {}, order: {}, paginate: {} };
+	var clauses = this.clauses = { where: {}, order: {}, paginate: {} };
 
 	h.each(arguments, function(arg) {
 		if(arg) {
@@ -31,6 +25,7 @@ h.extend(Algebra.prototype, {
 		options = options || {};
 
 		var setClone = h.extend({}, set);
+    var clauses = this.clauses;
 		var checkClauses = ['order', 'paginate'];
 		var clauseProps = {
 			enabled: {
@@ -49,7 +44,7 @@ h.extend(Algebra.prototype, {
 			var valuesForClause = {};
 			var prop;
 
-			for(prop in this.clauses[clauseName]) {
+			for(prop in clauses[clauseName]) {
 				if(prop in setClone) {
 					valuesForClause[prop] = setClone[prop];
 					delete setClone[prop];
@@ -63,6 +58,18 @@ h.extend(Algebra.prototype, {
 		clauseProps.where = setClone;
 
 		return clauseProps;
+	},
+	getDifferentClauseTypes: function(aClauses, bClauses) {
+		var self = this;
+		var differentTypes = [];
+
+		h.each(clause.TYPES, function(type) {
+			if(!self.equal(aClauses[type], bClauses[type])) {
+				differentTypes.push(type);
+			}
+		});
+
+		return differentTypes;
 	},
 	evaluateOperator: function(operator, a, b) {
 		var aClauseProps = this.getClauseProperties(a);
@@ -88,29 +95,27 @@ h.extend(Algebra.prototype, {
 	equal: function(a, b) {
 		return this.evaluateOperator(compare.equal, a, b);
 	},
-	subset: function(a, b){
-		// A is a subset of B if A has every property in B
-		return this.evaluateOperator(compare.subset, a, b);
-	},
-	whereSubset: function(a, b){
+	subset: function(a, b) {
 		var aClauseProps = this.getClauseProperties(a);
 		var bClauseProps = this.getClauseProperties(b);
+		var compatibleSort = true;
+		var result;
 
-		return this.evaluateOperator(
-			compare.subset,
-			aClauseProps.where,
-			bClauseProps.where
-		);
-	},
-	whereInSubset: function(a, b){
-		var aClauseProps = this.getClauseProperties(a);
-		var bClauseProps = this.getClauseProperties(b);
+		if((aClauseProps.enabled.paginate || bClauseProps.enabled.paginate) &&
+			(aClauseProps.enabled.order || bClauseProps.enabled.order)) {
+			// compare order clauses without any special comparators
+			compatibleSort = compare.equal(aClauseProps.order, bClauseProps.order,
+				undefined, undefined, undefined, {}, {});
+		}
 
-		return this.evaluateOperator(
-			compare.subset,
-			h.extend(aClauseProps.where, aClauseProps.paginate),
-			h.extend(bClauseProps.where, bClauseProps.paginate)
-		);
+		if(!compatibleSort) {
+			result = false;
+		}
+		else {
+			result = this.evaluateOperator(compare.subset, a, b);
+		}
+
+		return result;
 	},
 	properSubset: function(a, b){
 		return this.subset(a, b) && !this.equal(a, b);
@@ -129,25 +134,22 @@ h.extend(Algebra.prototype, {
 	 * @param {Object} b
 	 */
 	difference: function(a, b) {
-		var self = this;
 		var aClauseProps = this.getClauseProperties(a);
 		var bClauseProps = this.getClauseProperties(b);
-		var clauses = ['where', 'order', 'paginate'];
-		var differentClauses = [];
-		var result;
-
-		h.each(clauses, function(clauseName) {
-			if(!self.equal(aClauseProps[clauseName], bClauseProps[clauseName])) {
-				differentClauses.push(clauseName);
-			}
-		});
+		var differentClauses = this.getDifferentClauseTypes(aClauseProps,
+			bClauseProps);
+		var result; // if too many clauses are different, then we won't be able
+								// to determine the difference
 
 		switch(differentClauses.length) {
 			case 0 : {
+				// if all the clauses are the same, then there can't be a difference
 				result = false;
 				break;
 			}
 			case 1 : {
+				// if there's only one clause to evaluate, then we can try to determine
+				// the difference set
 				result = compare.difference(aClauseProps[differentClauses[0]],
 					bClauseProps[differentClauses[0]], undefined, undefined, undefined,
 					this.clauses[differentClauses[0]], {});
@@ -181,12 +183,6 @@ module.exports = {
 	},
 	subset: function(a, b, config) {
 		return Algebra.make(config).subset(a, b);
-	},
-	whereSubset: function(a, b, config) {
-		return Algebra.make(config).whereSubset(a, b);
-	},
-	whereInSubset: function(a, b, config) {
-		return Algebra.make(config).whereInSubset(a, b);
 	},
 	properSubset: function(a, b, config) {
 		return Algebra.make(config).properSubset(a, b);

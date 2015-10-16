@@ -60,7 +60,7 @@ test('set.union', function(){
 	res = set.union({foo: "bar"},{foo: "zed", sort: "foo"}, comparator);
 	ok(!res, "values not equal");
 
-	var res = set.union({foo: "bar", sort: "foo"},{name: "A"}, comparator);
+	res = set.union({foo: "bar", sort: "foo"},{name: "A"}, comparator);
 	ok(!res, "values not equal");
 });
 
@@ -92,7 +92,7 @@ test('set.intersection', function(){
 	var res = set.intersection({} , { sort: 'name' }, comparator);
 	deepEqual(res, {}, "");
 
-	var res = set.intersection({ sort: 'name' } , { sort: 'name' }, comparator);
+	res = set.intersection({ sort: 'name' } , { sort: 'name' }, comparator);
 	deepEqual(res, {}, "");
 
 	res = set.intersection({type: 'new'} , { sort: 'name', userId: 5 }, comparator);
@@ -155,8 +155,6 @@ test('set.subset', function(){
 });
 
 test('set.subset with range', function(){
-	var ignoreProp = function(){ return true; };
-
 	var algebra = new set.Algebra(comparators.sort('sort'),comparators.rangeInclusive('start','end'));
 
 	// add sort .. same .. different
@@ -217,10 +215,6 @@ test('set.subset with range', function(){
 		},
 		superRight: function(setA, setB){
 			setA.type = "apples";
-		},
-		disjoint: function(){
-			setA.type = "apples";
-			setB.color = "blue";
 		}
 	};
 
@@ -238,10 +232,10 @@ test('set.subset with range', function(){
 		equal( algebra.subset(sets.left, sets.right), result, JSON.stringify(sets.left)+" ⊂ "+JSON.stringify(sets.right)+" = "+result );
 	};
 
-	//assertSubset([sets.superRight, range.right, sort.right], false);
+	assertSubset([sets.superRight, range.right, sort.right], false);
 	assertSubset([sets.same, range.same, sort.different], false);
-	/*assertSubset([sets.same, range.same, sort.same], true);
+	assertSubset([sets.same, range.same, sort.same], true);
 
 	assertSubset([sets.same, range.superRight, sort.left], false);
-	assertSubset([sets.same, range.superRight, sort.same], true);*/
+	assertSubset([sets.same, range.superRight, sort.same], true);
 });

@@ -1,3 +1,5 @@
+var IgnoreType = function(){};
+
 var helpers;
 module.exports = helpers = {
 	extend: function(d, s){
@@ -170,5 +172,3 @@ module.exports = helpers = {
 	// This is a dummy object that can signal to be ignored
 	ignoreType: new IgnoreType()
 };
-
-function IgnoreType(){}

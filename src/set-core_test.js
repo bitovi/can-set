@@ -139,7 +139,7 @@ test('set.union', function(){
 	res = set.union({foo: "bar"},{foo: "zed"});
 	ok(!res, "values not equal");
 
-	var res = set.union({foo: "bar"},{name: "A"});
+	res = set.union({foo: "bar"},{name: "A"});
 	ok(!res, "values not equal");
 });
 
@@ -177,7 +177,7 @@ test('set.intersection', function(){
 	res = set.intersection({foo: "bar"},{foo: "zed"});
 	ok(!res, "values not equal");
 
-	var res = set.intersection({foo: 'bar'},{completed: true});
+	res = set.intersection({foo: 'bar'},{completed: true});
 	deepEqual(res, {foo: 'bar', completed: true}, 'intersection should combine definitions');
 });
 
