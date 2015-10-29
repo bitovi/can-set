@@ -2,37 +2,71 @@ var compare = require("./compare");
 var set = require("./set-core");
 var h = require("./helpers");
 
-// want A and B, but A w/o the range
-var defaultGetSubset = function(a, b, bItems, algebra, options){
-	return h.filter.call(bItems, function(item){
-		return set.subset(item, a, algebra);
+var filterData = function(data, clause, comparators) {
+	// reduce response to items in data that meet clause criteria
+	return h.filter.call(data, function(item) {
+		var isSubset = compare.subset(item, clause, undefined, undefined,
+			undefined, comparators, {});
+
+		return isSubset;
 	});
 };
 
+var getAData = function(a, b, bData, algebra) {
+	var aClauseProps = algebra.getClauseProperties(a);
+	var bClauseProps = algebra.getClauseProperties(b);
+	var options = {}; // options.getSubsets mutated by compare.subset
 
-module.exports = {
-	getSubset: function(a, b, bItems, algebra){
-		var options = {};
+	// reduce response to items in data that meet where criteria
+	var aData = filterData(bData, aClauseProps.where, algebra.clauses.where);
 
-		var isSubset = compare.subset(a, b, undefined, undefined, undefined, algebra, options);
+	if(aData.length &&
+		(aClauseProps.enabled.paginate || bClauseProps.enabled.paginate)) {
 
-		if(isSubset) {
-			var aItems = bItems.slice(0);
+		// if results require sorting, get comparator from options.getSubsets
+		if(aClauseProps.enabled.order || bClauseProps.enabled.order) {
+			options = {};
 
-			var aCopy = h.extend({}, a);
+			compare.subset(aClauseProps.order, bClauseProps.order, undefined,
+				undefined, undefined, algebra.clauses.order, options);
 
-			// remove properties that are going to do their own filtering.
-			h.each(options.removeProps, function(prop){
-				delete aCopy[prop];
+			h.each(options.getSubsets, function(comparator) {
+				aData = aData.sort(comparator);
 			});
-			aItems = defaultGetSubset(aCopy, b, aItems, algebra, options);
-			h.each(options.getSubsets, function(filter){
-				aItems = filter(a,b, aItems, algebra, options);
-			});
-
-			return aItems;
 		}
 
+		options = {};
+
+		// get pagination filters from options.getSubsets
+		compare.subset(aClauseProps.paginate, bClauseProps.paginate, undefined,
+			undefined, undefined, algebra.clauses.paginate, options);
+
+		h.each(options.getSubsets, function(filter) {
+			aData = filter(a, b, aData, algebra, options);
+		});
+	}
+
+	return aData;
+};
+
+module.exports = {
+	getSubset: function(a, b, bData, algebra) {
+		// make sure passed in algebra is Algebra and not comparators
+		algebra = set.Algebra.make(algebra);
+
+		var aClauseProps = algebra.getClauseProperties(a);
+		var bClauseProps = algebra.getClauseProperties(b);
+
+		// ignoring ordering, can we reduce set b into set a?
+		var isSubset = set.subset(
+			h.extend({}, aClauseProps.where, aClauseProps.paginate),
+			h.extend({}, bClauseProps.where, bClauseProps.paginate),
+			algebra
+		);
+
+		if(isSubset) {
+			return getAData(a, b, bData, algebra);
+		}
 	},
 	getUnion: function(a,b,aItems, bItems, algebra){
 		var options = {};

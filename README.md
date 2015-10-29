@@ -22,7 +22,7 @@ utilities and middleware for the client.
 > - API
 >   - [equal](#setequal)
 >   - [subset](#setsubset)
->   - [properSubset](#setproperSubset)
+>   - [properSubset](#setpropersubset)
 >   - [intersection](#setintersection)
 >   - [difference](#setdifference)
 >   - [union](#setunion)
@@ -32,6 +32,7 @@ utilities and middleware for the client.
 >   - [Algebra](#setalgebra)
 >   - [comparators](#setcomparators)
 >     - [boolean](#setcomparatorsboolean)
+>     - [enum](#setcomparatorsenum)
 >     - [rangeInclusive](#setcomparatorsrangeinclusive)
 > - [Contributing](#contributing)
  

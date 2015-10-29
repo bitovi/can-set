@@ -126,7 +126,7 @@ test('rangeInclusive set.difference', function() {
 	 * X / Y = the set of all things not in Y
 	 */
 	res = set.difference({}, { start: 0, end: 10 }, comparator);
-	equal(res, true);
+	equal(res, true, 'universal set');
 
 	/*
 	 * X = [A0, ..., A49]
