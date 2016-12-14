@@ -36,9 +36,9 @@
   "homepage": "https://github.com/canjs/can-set",
   "devDependencies": {
     "jshint": "^2.7.0",
-    "steal-tools": "^0.16.8",
+    "steal-tools": "^1.0.0",
     "testee": "^0.3.0",
-    "steal": "^0.16.43",
+    "steal": "^1.0.0",
     "steal-qunit": "1.0.0",
     "bit-docs": "^0.0.7"
   },
