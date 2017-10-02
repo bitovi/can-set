@@ -13,8 +13,9 @@
     "release:major": "npm version major && npm publish",
     "jshint": "jshint src/. --config",
     "testee": "testee test/test.html --browsers firefox",
-    "test": "npm run jshint && npm run testee",
-    "build": "node build.js"
+    "test": "npm run detect-cycle && npm run jshint && npm run testee",
+    "build": "node build.js",
+    "detect-cycle": "detect-cyclic-packages"
   },
   "repository": {
     "type": "git",
@@ -35,12 +36,13 @@
   },
   "homepage": "https://github.com/canjs/can-set",
   "devDependencies": {
+    "bit-docs": "^0.0.7",
+    "detect-cyclic-packages": "^1.0.0",
     "jshint": "^2.7.0",
-    "steal-tools": "^1.0.0",
-    "testee": "^0.7.0",
     "steal": "^1.0.1",
     "steal-qunit": "^1.0.0",
-    "bit-docs": "^0.0.7"
+    "steal-tools": "^1.0.0",
+    "testee": "^0.7.0"
   },
   "dependencies": {
     "can-namespace": "^1.0.0",
