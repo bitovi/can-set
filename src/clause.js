@@ -9,6 +9,7 @@ var clause = {};
  * new clause.Where()
  *
  * This is so we can tell what type of clause some properties are for.
+ * @hide
  */
 module.exports = clause;
 
