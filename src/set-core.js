@@ -53,6 +53,7 @@ function Translate(clause, options){
  *
  * new set.Algebra(Where(),Paginate(),Sort())
  *
+ * @hide
  */
 var Algebra = function(){
 	var clauses = this.clauses = {
