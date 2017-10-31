@@ -264,6 +264,7 @@ module.exports = compareHelpers = {
 	},
 	/**
 	 * Checks if A is a subset of B.  If A is a subset of B, A \ B will be undefined. But B \ A will be defined.
+	 * @hide
 	 */
 	properSubsetComparesType: function(a, b, aParent, bParent, prop, compares, options){
 		if(typeof compares === "function") {
