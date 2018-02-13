@@ -23,13 +23,13 @@ A prop function returns algebra values for two values for a given property.
   For example, if you had a `colors` property and A is `["Red","Blue"]` and B is `["Green","Yellow","Blue"]`, the
   AlgebraResult object might look like:
 
-  ```javascript
+  ```js
   {
-    union: ["Red","Blue","Green","Yellow"],
-    intersection: ["Blue"],
-    difference: ["Red"],
-    count: 2000
-  }
+	union: ["Red","Blue","Green","Yellow"],
+	intersection: ["Blue"],
+	difference: ["Red"],
+	count: 2000
+}
   ```
 
   The count is `2000` because there might be 2000 items represented by colors "Red" and "Blue".  Often
