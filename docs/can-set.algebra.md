@@ -13,14 +13,14 @@ using the `compares` configuration.
 
 A default `algebra` instance can be created like:
 
-```js
-var set = require("can-set");
-var defaultAlgebra = new set.Algebra();
+```javascript
+import set from "can-set";
+const defaultAlgebra = new set.Algebra();
 ```
 
 This treats every property as a filter in a `where` clause.  For example:
 
-```js
+```javascript
 // `{id: 2, ownerId: 5}` belongs to ``.getList({ownerId: 5})`
 defaultAlgebra.has({ownerId: 5}, {id: 2, ownerId: 5}) //-> true
 
@@ -36,9 +36,9 @@ defaultAlgebra.getSubset({ownerId: 5}, {},
 add better property behavior awareness:
 
 
-```js
-var set = require("can-set");
-var todoAlgebra = new set.Algebra(
+```javascript
+import set from "can-set";
+const todoAlgebra = new set.Algebra(
   set.props.boolean("completed"),
   set.props.id("_id"),
   set.props.offsetLimit("offset","limit")

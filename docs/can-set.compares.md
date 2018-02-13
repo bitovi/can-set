@@ -4,7 +4,7 @@
 
 @description An object of property names and `prop` functions.
 
-```js
+```javascript
 {
   // return `true` if the values should be considered the same:
   lastName: function(aValue, bValue){
