@@ -14,26 +14,32 @@ can-set is a utility for comparing [can-set/Set sets] that are represented by th
 Once you've imported the `can-set` module into your project, use it to create a `set.Algebra` and then use that to compare and perform operations on sets.  
 
 ```js
-import set from 'can-set';
+import set from "can-set";
+
 // create an algebra
 const algebra = new set.Algebra(
+
 	// specify the unique identifier on data
-	set.props.id("_id"),  
+	set.props.id( "_id" ),
+
 	// specify that completed can be true, false or undefined
-	set.props.boolean("completed"),
+	set.props.boolean( "completed" ),
+
 	// specify properties that define pagination
-	set.props.rangeInclusive("start","end"),
+	set.props.rangeInclusive( "start", "end" ),
+
 	// specify the property that controls sorting
-	set.props.sort("orderBy"),
+	set.props.sort( "orderBy" ),
 );
 
 // compare two sets
-algebra.subset({start: 2, end: 3}, {start: 1, end: 4}) //-> true
-algebra.difference({} , {completed: true}) //-> {completed: false}
+algebra.subset( { start: 2, end: 3 }, { start: 1, end: 4 } ); //-> true
+algebra.difference( {}, { completed: true } ); //-> {completed: false}
 
 // perform operations on sets
-algebra.getSubset({start: 2,end: 3},{start: 1,end: 4},
-	[{id: 1},{id: 2},{id: 3},{id: 4}])
+algebra.getSubset( { start: 2, end: 3 }, { start: 1, end: 4 },
+	[ { id: 1 }, { id: 2 }, { id: 3 }, { id: 4 } ] );
+
 //-> [{id: 2},{id: 3}]
 ```
 
@@ -71,37 +77,37 @@ wanted to load all todos (`{}`), we could use a set [can-set.Algebra.prototype.d
 only the data that hasn't been loaded.
 
 ```js
-todoAlgebra.difference({}, {complete: false}) //-> {complete: true}
+todoAlgebra.difference( {}, { complete: false } ); //-> {complete: true}
 ```
 
 These algebra's are typically used internally by either [can-connect] or
 [can-fixture] to provide these special behaviors:
 
 ```js
-const cacheConnection = connect([
-	require("can-connect/data/memory-cache/memory-cache")
-],{
+const cacheConnection = connect( [
+	require( "can-connect/data/memory-cache/memory-cache" )
+], {
 	algebra: todoAlgebra
-});
+} );
 
-const todoConnection = connect([
-	require("can-connect/data/url/url"),
-	require("can-connect/cache-requests/cache-requests")
-],{
+const todoConnection = connect( [
+	require( "can-connect/data/url/url" ),
+	require( "can-connect/cache-requests/cache-requests" )
+], {
 	cacheConnection: cacheConnection,
 	url: "/todos",
 	algebra: todoAlgebra
-});
+} );
 ```
 
 ```js
-const todoStore = fixture.store([
-	{ _id : 1, name : 'Do the dishes', complete: true },
-	{ _id : 2, name : 'Walk the dog', complete: false }
+const todoStore = fixture.store( [
+	{ _id: 1, name: "Do the dishes", complete: true },
+	{ _id: 2, name: "Walk the dog", complete: false }
 ],
 todoAlgebra );
 
-fixture("/todos/{_id}", todoStore);
+fixture( "/todos/{_id}", todoStore );
 ```
 
 The best way to think about `can-set` is that its a way to detail
@@ -121,25 +127,27 @@ set `{sort: "name asc"}`, but it doesn't:
 
 ```js
 const algebra = new set.Algebra();
-algebra.has({sort: "name asc"}, {id: 1, name: "do dishes"}) //-> false
+algebra.has( { sort: "name asc" }, { id: 1, name: "do dishes" } ); //-> false
 ```
 
 The fix is to either ignore `sort` like:
 
 ```js
-const algebra = new set.Algebra({
-	sort: function() { return true; }
-});
-algebra.has({sort: "name asc"}, {id: 1, name: "do dishes"}) //-> false
+const algebra = new set.Algebra( {
+	sort: function() {
+		return true;
+	}
+} );
+algebra.has( { sort: "name asc" }, { id: 1, name: "do dishes" } ); //-> false
 ```
 
 Or even better, make `sort` actually able to understand sorting:
 
 ```js
 const algebra = new set.Algebra(
-	set.props.sort("sort")
+	set.props.sort( "sort" )
 );
-algebra.has({sort: "name asc"}, {id: 1, name: "do dishes"}) //-> true
+algebra.has( { sort: "name asc" }, { id: 1, name: "do dishes" } ); //-> true
 ```
 
 Similarly, you can verify that [can-set.Algebra.prototype.getSubset]
@@ -149,14 +157,14 @@ the wrong results:
 ```js
 const algebra = new set.Algebra();
 algebra.getSubset(
-	{offset: 1, limit: 2},
+	{ offset: 1, limit: 2 },
 	{},
 	[
-		{id: 1, name: "do dishes"},
-		{id: 2, name: "mow lawn"},
-		{id: 3, name: "trash"}
+		{ id: 1, name: "do dishes" },
+		{ id: 2, name: "mow lawn" },
+		{ id: 3, name: "trash" }
 	]
-) //-> []
+); //-> []
 ```
 
 This is because it's looking for instance data where `offset===1` and `limit===2`.
@@ -164,17 +172,17 @@ Again, you can teach your algebra what to do with these properties like:
 
 ```js
 const algebra = new set.Algebra(
-	set.props.offsetLimit("offset","limit")
+	set.props.offsetLimit( "offset", "limit" )
 );
 algebra.getSubset(
-	{offset: 1, limit: 2},
+	{ offset: 1, limit: 2 },
 	{},
 	[
-		{id: 1, name: "do dishes"},
-		{id: 2, name: "mow lawn"},
-		{id: 3, name: "trash"}
+		{ id: 1, name: "do dishes" },
+		{ id: 2, name: "mow lawn" },
+		{ id: 3, name: "trash" }
 	]
-) //-> [
+); //-> [
 //  {id: 2, name: "mow lawn"},
 // {id: 3, name: "trash"}
 // ]

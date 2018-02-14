@@ -9,10 +9,13 @@ The following functions create `compares` objects that can be mixed together to 
 import set from "can-set";
 const algebra = new set.Algebra(
 	{
+
 		// ignore this property in set algebra
-		sessionId:  function(){ return true }
+		sessionId: function() {
+			return true;
+		}
 	},
-	set.props.boolean("completed"),
-	set.props.rangeInclusive("start","end")
+	set.props.boolean( "completed" ),
+	set.props.rangeInclusive( "start", "end" )
 );
 ```

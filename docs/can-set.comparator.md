@@ -25,12 +25,12 @@ A prop function returns algebra values for two values for a given property.
 
   ```js
   {
-	union: ["Red","Blue","Green","Yellow"],
-	intersection: ["Blue"],
-	difference: ["Red"],
+	union: [ "Red", "Blue", "Green", "Yellow" ],
+	intersection: [ "Blue" ],
+	difference: [ "Red" ],
 	count: 2000
 }
-  ```
+```
 
   The count is `2000` because there might be 2000 items represented by colors "Red" and "Blue".  Often
   the real number can not be known.
