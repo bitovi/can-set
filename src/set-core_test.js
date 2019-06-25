@@ -6,7 +6,7 @@ var ignoreProp = function(){ return true; };
 
 QUnit.module("can-set core");
 
-test('set.equal', function(){
+QUnit.test('set.equal', function(assert) {
 	var res,
 		now;
 
@@ -15,7 +15,7 @@ test('set.equal', function(){
 		{ type: 'FOLDER', count: 5 },
 		{ count: ignoreProp }
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = set.equal(
 		{ type: 'folder' },
@@ -28,20 +28,20 @@ test('set.equal', function(){
 			}
 		}
 	);
-	ok(res, 'folder case ignored');
+	assert.ok(res, 'folder case ignored');
 
 	// Issue #773
 	res = set.equal(
 		{foo: null},
 		{foo: new Date()}
 	);
-	ok(!res, 'nulls and Dates are not considered the same. (#773)');
+	assert.ok(!res, 'nulls and Dates are not considered the same. (#773)');
 
 	res = set.equal(
 		{foo: null},
 		{foo: {}}
 	);
-	ok(!res, 'nulls and empty objects are not considered the same. (#773)');
+	assert.ok(!res, 'nulls and empty objects are not considered the same. (#773)');
 
 	// Issue #35
 	now = new Date();
@@ -49,74 +49,74 @@ test('set.equal', function(){
 		{foo: now},
 		{foo: new Date(now.getTime())}
 	);
-	ok(res, 'date objects with same time values are considered the same. (#35)');
+	assert.ok(res, 'date objects with same time values are considered the same. (#35)');
 
 });
 
-test('set.subset', function(){
+QUnit.test('set.subset', function(assert) {
 	var res;
 
 	res = set.subset({ type: 'FOLDER' }, { type: 'FOLDER' });
-	ok(res, 'equal sets');
+	assert.ok(res, 'equal sets');
 
 	res = set.subset({ type: 'FOLDER', parentId: 5 }, { type: 'FOLDER' });
-	ok(res, 'sub set');
+	assert.ok(res, 'sub set');
 
 	res = set.subset({ type: 'FOLDER' }, { type: 'FOLDER', parentId: 5 });
-	ok(!res, 'wrong way');
+	assert.ok(!res, 'wrong way');
 
 	res = set.subset(
 		{ type: 'FOLDER', parentId: 7 },
 		{ type: 'FOLDER', parentId: 5 }
 	);
-	ok(!res, 'different values');
+	assert.ok(!res, 'different values');
 
 	res = set.subset(
 		{ type: 'FOLDER', count: 5 },
 		{ type: 'FOLDER' },
 		{ count: ignoreProp }
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = set.subset(
 		{ type: 'FOLDER', kind: 'tree' },
 		{ type: 'FOLDER', foo: true, bar: true },
 		{ foo: ignoreProp, bar: ignoreProp }
 	);
-	ok(res, 'understands a subset');
+	assert.ok(res, 'understands a subset');
 
 	res = set.subset(
 		{ type: 'FOLDER', foo: true, bar: true },
 		{ type: 'FOLDER', kind: 'tree' },
 		{ foo: ignoreProp, bar: ignoreProp, kind: ignoreProp }
 	);
- 	ok(res,	'ignores nulls');
+ 	assert.ok(res,	'ignores nulls');
 
 });
 
-test('set.properSubset', function(){
-	equal( set.properSubset({foo: "bar"},{}), true );
-	equal( set.properSubset({},{}), false );
-	equal( set.properSubset({},{foo: "bar"}), false );
+QUnit.test('set.properSubset', function(assert) {
+	assert.equal( set.properSubset({foo: "bar"},{}), true );
+	assert.equal( set.properSubset({},{}), false );
+	assert.equal( set.properSubset({},{foo: "bar"}), false );
 });
 
-test('set.difference', function(){
+QUnit.test('set.difference', function(assert) {
 
 	var res = set.difference({}, { completed: true });
-	ok(res === true, "diff should be true");
+	assert.ok(res === true, "diff should be true");
 
 
 	res = set.difference({ completed: true }, { completed: true });
-	equal(res, false);
+	assert.equal(res, false);
 
 	res = set.difference({ completed: true }, {});
-	equal(res, false);
+	assert.equal(res, false);
 
 	res = set.difference({ completed: true }, { userId: 5 });
-	equal(res, false); // TODO: probably should be undefined
+	assert.equal(res, false); // TODO: probably should be undefined
 });
 
-test('set.difference({ function })', function() {
+QUnit.test('set.difference({ function })', function(assert) {
 	var res = set.difference({ colors: ['red','blue'] }, { colors: ['blue'] }, {
 		colors: function() {
 			return {
@@ -127,51 +127,51 @@ test('set.difference({ function })', function() {
 		}
 	});
 
-	deepEqual(res, { colors: [ 'red' ] });
+	assert.deepEqual(res, { colors: [ 'red' ] });
 });
 
-test('set.union', function(){
+QUnit.test('set.union', function(assert) {
 	// set / subset
 	var res = set.union({}, { completed: true });
-	deepEqual(res , {}, "set / subset");
+	assert.deepEqual(res , {}, "set / subset");
 
 	res = set.union({ completed: true }, {});
-	deepEqual(res , {}, "subset / set");
+	assert.deepEqual(res , {}, "subset / set");
 
 	res = set.union({foo: "bar"},{foo: "bar"});
-	deepEqual(res, {foo: "bar"}, "equal");
+	assert.deepEqual(res, {foo: "bar"}, "equal");
 
 	res = set.union({foo: "bar"},{foo: "zed"});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = set.union({foo: "bar"},{name: "A"});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = set.union(
 		{sort: {name: {first: 'Rick', last: 'Flair'}, type: 'split'}},
 		{sort: {name: {first: 'Rick', last: 'Flair'}, type: 'split'}}
 	);
 
-	deepEqual(
+	assert.deepEqual(
 		res,
 		{sort: {name: {first: 'Rick', last: 'Flair'}, type: 'split'}},
 		'correctly unifies nested objects'
 	);
 });
 
-test('set.union Array', function(){
+QUnit.test('set.union Array', function(assert) {
 
 	// set / subset
 	var res = set.union({foo: ["a","b"]}, { foo: ["a","c"] });
-	deepEqual(res , {foo: ["a","b","c"]}, "set / subset");
+	assert.deepEqual(res , {foo: ["a","b","c"]}, "set / subset");
 
 });
 
-test('set.count', function(){
-	ok( set.count({}) === Infinity, "defaults to infinity");
-	ok( set.count({foo: "bar"},{}) === Infinity, "defaults to infinity");
+QUnit.test('set.count', function(assert) {
+	assert.ok( set.count({}) === Infinity, "defaults to infinity");
+	assert.ok( set.count({foo: "bar"},{}) === Infinity, "defaults to infinity");
 
-	equal( set.count({foo: "bar"}, {
+	assert.equal( set.count({foo: "bar"}, {
 		foo: function(){
 			return {
 				count: 100
@@ -180,101 +180,101 @@ test('set.count', function(){
 	}), 100,  "works with a single value"  );
 });
 
-test('set.intersection', function(){
+QUnit.test('set.intersection', function(assert) {
 	var res = set.intersection({}, { completed: true });
-	deepEqual(res , { completed: true }, "set / subset");
+	assert.deepEqual(res , { completed: true }, "set / subset");
 
 	res = set.intersection({ completed: true }, {});
-	deepEqual(res , { completed: true }, "subset / set");
+	assert.deepEqual(res , { completed: true }, "subset / set");
 
 	res = set.intersection({foo: "bar"},{foo: "bar"});
-	deepEqual(res, {foo: "bar"}, "equal");
+	assert.deepEqual(res, {foo: "bar"}, "equal");
 
 	res = set.intersection({foo: "bar"},{foo: "zed"});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = set.intersection({foo: 'bar'}, {completed: true});
-	deepEqual(res, {foo: 'bar', completed: true}, 'intersection should combine definitions');
+	assert.deepEqual(res, {foo: 'bar', completed: true}, 'intersection should combine definitions');
 
 	res = set.intersection(
 		{name: {title: 'Ravishing', last: 'Rude'}, type: 'split'},
 		{name: {first: 'Rick'}}
 	);
-	deepEqual(
+	assert.deepEqual(
 		res,
 		{name: {title: 'Ravishing', first: 'Rick', last: 'Rude'}, type: 'split'},
 		'intersects nested objects'
 	);
 });
 
-test('set.intersection Array', function(){
+QUnit.test('set.intersection Array', function(assert) {
 
 	// set / subset
 	var res = set.intersection({foo: ["a","b"]}, { foo: ["a","c"] });
-	deepEqual(res , {foo: ["a"]}, "intersection");
+	assert.deepEqual(res , {foo: ["a"]}, "intersection");
 
 });
 
-test('set.has', function(){
+QUnit.test('set.has', function(assert) {
 	var res;
 
 	res = set.has({ type: 'FOLDER' }, { type: 'FOLDER' });
-	ok(res, 'equal sets');
+	assert.ok(res, 'equal sets');
 
 	res = set.has({ type: 'FOLDER' }, { type: 'FOLDER', parentId: 5 });
-	ok(res, 'sub set');
+	assert.ok(res, 'sub set');
 
 	res = set.has( { type: 'FOLDER', parentId: 5 }, { type: 'FOLDER' });
-	ok(!res, 'wrong way');
+	assert.ok(!res, 'wrong way');
 
 	res = set.has(
 		{ type: 'FOLDER', parentId: 7 },
 		{ type: 'FOLDER', parentId: 5 }
 	);
-	ok(!res, 'different values');
+	assert.ok(!res, 'different values');
 
 	res = set.has(
 		{ type: 'FOLDER' },
 		{ type: 'FOLDER', count: 5 },
 		{ count: ignoreProp }
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = set.has(
 		{ type: 'FOLDER', foo: true, bar: true },
 		{ type: 'FOLDER', kind: 'tree' },
 		{ foo: ignoreProp, bar: ignoreProp }
 	);
-	ok(res, 'understands a subset');
+	assert.ok(res, 'understands a subset');
 
 	res = set.has(
 		{ type: 'FOLDER', kind: 'tree' },
 		{ type: 'FOLDER', foo: true, bar: true },
 		{ foo: ignoreProp, bar: ignoreProp, kind: ignoreProp }
 	);
-	ok(res,	'ignores nulls');
+	assert.ok(res,	'ignores nulls');
 
 	var algebra = new set.Algebra(set.props.id('invoice_number'), set.props.id('product_code'));
 	res = algebra.has(
 		{invoice_number: 5},
 		{invoice_number: 6, product_code: 10, product_name: 'Soap'}
 	);
-	ok(res === false, 'understands compound ids subset exclusion');
+	assert.ok(res === false, 'understands compound ids subset exclusion');
 
 	res = algebra.has(
 		{invoice_number: 5},
 		{invoice_number: 5, product_code: 10, product_name: 'Soap'}
 	);
-	ok(res, 'understands compound id subset inclusion');
+	assert.ok(res, 'understands compound id subset inclusion');
 });
 
-test('set.index', function(){
+QUnit.test('set.index', function(assert) {
 	var index = set.index(
 		{sort: "name"},
 		[{id: 1, name:"g"}, {id: 2, name:"j"}, {id: 3, name:"m"}, {id: 4, name:"s"}],
 		{name: "k"});
 
-	equal(index, undefined, "no value if nothing is set");
+	assert.equal(index, undefined, "no value if nothing is set");
 
 	var algebra = new set.Algebra(set.props.id("id"));
 
@@ -283,21 +283,21 @@ test('set.index', function(){
 		[{id: 1, name:"g"}, {id: 2, name:"j"}, {id: 3, name:"m"}, {id: 4, name:"s"}],
 		{id: 0, name: "k"});
 
-	equal(index, 0);
+	assert.equal(index, 0);
 });
 
-test('algebra.id', function(){
+QUnit.test('algebra.id', function(assert) {
 	var algebra = new set.Algebra(set.props.id("_id"));
-	QUnit.equal(algebra.id({_id: 5}), 5, "only one id, returns value");
+	assert.equal(algebra.id({_id: 5}), 5, "only one id, returns value");
 
 	algebra = new set.Algebra(set.props.id("studentId"), set.props.id("classId"));
-	QUnit.equal(algebra.id({studentId: 6, classId: "7", foo: "bar"}), JSON.stringify({studentId: 6, classId: "7"}), "only one id, returns set as JSON");
+	assert.equal(algebra.id({studentId: 6, classId: "7", foo: "bar"}), JSON.stringify({studentId: 6, classId: "7"}), "only one id, returns set as JSON");
 
 });
 
-test('set.has algebra with pagination', function () {
+QUnit.test('set.has algebra with pagination', function(assert) {
 	var algebra = new set.Algebra(set.props.offsetLimit('$skip', '$limit'));
 	var setA = {$limit: 5, $skip: 0};
 	var props = {name: 'My Portfolio'};
-	ok(algebra.has(setA, props));
+	assert.ok(algebra.has(setA, props));
 });

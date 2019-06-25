@@ -19,7 +19,7 @@ var items = [
 	{ id: 7, note: 'C', type: 'critical' }
 ];
 
-test("getSubset against non ranged set", function(){
+QUnit.test("getSubset against non ranged set", function(assert) {
 	/*
 	 * 1. set b = {} evaluates to all available entities -- the univeral set
 	 * 2. set a = { type: 'critical', start: 1, end: 3 } evaluates to entities
@@ -41,10 +41,10 @@ test("getSubset against non ranged set", function(){
 	var res = set.getSubset({ type: 'critical', start: 1, end: 3 }, {}, items,
 		props.rangeInclusive("start", "end"));
 
-	deepEqual(res && h.map.call(res, getId), [2,4,6]);
+	assert.deepEqual(res && h.map.call(res, getId), [2,4,6]);
 });
 
-test("getSubset ordered ascending and paginated", function() {
+QUnit.test("getSubset ordered ascending and paginated", function(assert) {
 	/*
 	 * 1. set b = {} evaluates to all available entities -- the univeral set
 	 * 2. set a = { type: 'critical', sort: 'note ASC', start: 1, end: 3 }
@@ -74,10 +74,10 @@ test("getSubset ordered ascending and paginated", function() {
 		{}, items, algebra
 	);
 
-	deepEqual(res && h.map.call(res, getId), [7,1,2]);
+	assert.deepEqual(res && h.map.call(res, getId), [7,1,2]);
 });
 
-test("getSubset ordered descending and paginated", function() {
+QUnit.test("getSubset ordered descending and paginated", function(assert) {
 	/*
 	 * 1. set b = {} evaluates to all available entities -- the univeral set
 	 * 2. set a = { type: 'critical', sort: 'note DESC', start: 1, end: 3 }
@@ -102,43 +102,43 @@ test("getSubset ordered descending and paginated", function() {
 		{}, items, algebra
 	);
 
-	deepEqual(res && h.map.call(res, getId), [2,1,7]);
+	assert.deepEqual(res && h.map.call(res, getId), [2,1,7]);
 });
 
-test("getSubset against paginated set", function(){
+QUnit.test("getSubset against paginated set", function(assert) {
 	var res = set.getSubset(
 		{type: 'critical', start: 21, end: 23},
 		{type: 'critical', start: 20, end: 27},
 		items,
 		props.rangeInclusive("start","end") );
 
-	deepEqual(res && h.map.call(res, getId), [2,4,6]);
+	assert.deepEqual(res && h.map.call(res, getId), [2,4,6]);
 });
 
-test("getSubset returns undefined against incompatible set", function() {
+QUnit.test("getSubset returns undefined against incompatible set", function(assert) {
 	var res = set.getSubset(
 		{ note: 'C' },
 		{ type: 'critical' },
 		items
 	);
 
-	strictEqual(res, undefined);
+	assert.strictEqual(res, undefined);
 });
 
-test("getUnion basics", function(){
+QUnit.test("getUnion basics", function(assert) {
 	var union = set.getUnion({}, { foo: "bar" }, items, items.slice(0, 3));
-	deepEqual(union, items);
+	assert.deepEqual(union, items);
 });
 
-test("getUnion against ranged sets", function(){
+QUnit.test("getUnion against ranged sets", function(assert) {
 	var union = set.getUnion({start: 10, end: 13},{start: 14, end: 17},items.slice(0,4), items.slice(4,8), props.rangeInclusive("start","end"));
-	deepEqual(union, items);
+	assert.deepEqual(union, items);
 
 	union = set.getUnion({start: 14, end: 17}, {start: 10, end: 13}, items.slice(4,8),items.slice(0,4), props.rangeInclusive("start","end"));
-	deepEqual(union, items, "disjoint after");
+	assert.deepEqual(union, items, "disjoint after");
 });
 
-test("getUnion against overlapping ranged sets", function(){
+QUnit.test("getUnion against overlapping ranged sets", function(assert) {
 	var union = set.getUnion(
 		{start: 10, end: 14},
 		{start: 13, end: 17},
@@ -146,7 +146,7 @@ test("getUnion against overlapping ranged sets", function(){
 		items.slice(3,8),
 		props.rangeInclusive("start","end"));
 
-	deepEqual(union, items);
+	assert.deepEqual(union, items);
 
 	union = set.getUnion(
 		{start: 10, end: 11},
@@ -155,7 +155,7 @@ test("getUnion against overlapping ranged sets", function(){
 		items.slice(1,8),
 		props.rangeInclusive("start","end"));
 
-	deepEqual(union, items);
+	assert.deepEqual(union, items);
 
 	union = set.getUnion(
 		{start: 11, end: 17},
@@ -164,10 +164,10 @@ test("getUnion against overlapping ranged sets", function(){
 		items.slice(0,2),
 		props.rangeInclusive("start","end"));
 
-	deepEqual(union, items);
+	assert.deepEqual(union, items);
 });
 
-test("getUnion filters for uniqueness", function(){
+QUnit.test("getUnion filters for uniqueness", function(assert) {
 	var aItems = items.filter(function(a) {
 		return a.type === "critical";
 	});
@@ -177,24 +177,24 @@ test("getUnion filters for uniqueness", function(){
 	var unionItems = aItems.concat([bItems[0]]); // bItems[1] is already in aItems
 
 	var union = set.getUnion({type: "critical"},{note: "C"}, aItems, bItems, props.id("id"));
-	deepEqual(union, unionItems);
+	assert.deepEqual(union, unionItems);
 
 	// case with no ID in set algebra, but some same items.
 	union = set.getUnion({type: "critical"},{note: "C"}, aItems, bItems, {});
-	deepEqual(union, unionItems);
+	assert.deepEqual(union, unionItems);
 
 	// Case with not-same items with same ID
 	bItems = bItems.map(function(b) {
 		return assign({}, b);
 	});
 	union = set.getUnion({type: "critical"},{note: "C"}, aItems, bItems, props.id("id"));
-	deepEqual(union, unionItems);
+	assert.deepEqual(union, unionItems);
 
 });
 
-test("getSubset passed same object works (#3)", function(){
+QUnit.test("getSubset passed same object works (#3)", function(assert) {
 	var algebra = new set.Algebra(props.rangeInclusive("start","end"));
 	var setObj = {start: 1, end: 2};
 	var items = algebra.getSubset(setObj, setObj, [{id: 1}]);
-	deepEqual(items, [{id: 1}]);
+	assert.deepEqual(items, [{id: 1}]);
 });

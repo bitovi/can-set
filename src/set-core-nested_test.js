@@ -9,7 +9,7 @@ var ignoreProp = function(){ return true; };
 
 QUnit.module("can-set core - nested where");
 
-test('set.equal', function(){
+QUnit.test('set.equal', function(assert) {
 
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"),
@@ -29,19 +29,19 @@ test('set.equal', function(){
 		{$where: {type: 'FOLDER' } },
 		{$where: { type: 'FOLDER', count: 5 }}
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = algebra.equal(
 		{$where: { type: 'folder' }},
 		{$where: { type: 'FOLDER' }}
 	);
 
-	ok(res, 'folder case ignored');
+	assert.ok(res, 'folder case ignored');
 
 });
 
 
-test('set.subset', function(){
+QUnit.test('set.subset', function(assert) {
 
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"),
@@ -59,73 +59,73 @@ test('set.subset', function(){
 	var res;
 
 	res = algebra.subset({$where:{ type: 'FOLDER' }}, {$where:{ type: 'FOLDER' }});
-	ok(res, 'equal sets');
+	assert.ok(res, 'equal sets');
 
 	res = algebra.subset({$where:{ type: 'FOLDER', parentId: 5 }}, {$where:{ type: 'FOLDER' }});
-	ok(res, 'sub set');
+	assert.ok(res, 'sub set');
 
 	res = algebra.subset({$where:{ type: 'FOLDER' }}, {$where:{ type: 'FOLDER', parentId: 5 }});
-	ok(!res, 'wrong way');
+	assert.ok(!res, 'wrong way');
 
 	res = algebra.subset(
 		{$where:{ type: 'FOLDER', parentId: 7 }},
 		{$where:{ type: 'FOLDER', parentId: 5 }}
 	);
-	ok(!res, 'different values');
+	assert.ok(!res, 'different values');
 
 	res = algebra.subset(
 		{$where:{ type: 'FOLDER', count: 5 }},
 		{$where:{ type: 'FOLDER' }}
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = algebra.subset(
 		{$where:{ type: 'FOLDER', category: 'tree' }},
 		{$where:{ type: 'FOLDER', foo: true, bar: true }}
 	);
-	ok(res, 'understands a subset');
+	assert.ok(res, 'understands a subset');
 
 	res = algebra.subset(
 		{$where:{ type: 'FOLDER', foo: true, bar: true }},
 		{$where:{ type: 'FOLDER', kind: 'tree' }}
 	);
-	ok(res,	'ignores nulls');
+	assert.ok(res,	'ignores nulls');
 
 });
 
-test('set.properSubset', function(){
+QUnit.test('set.properSubset', function(assert) {
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where")
 	);
 
-	equal( algebra.properSubset( {$where:{foo: "bar"}}, {$where:{}}), true );
-	equal( algebra.properSubset({$where:{}},{$where:{}}), false );
-	equal( algebra.properSubset({$where:{}},{$where:{foo: "bar"}}), false );
+	assert.equal( algebra.properSubset( {$where:{foo: "bar"}}, {$where:{}}), true );
+	assert.equal( algebra.properSubset({$where:{}},{$where:{}}), false );
+	assert.equal( algebra.properSubset({$where:{}},{$where:{foo: "bar"}}), false );
 });
 
 
-test('set.difference', function(){
+QUnit.test('set.difference', function(assert) {
 
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where")
 	);
 
 	var res = algebra.difference({$where:{}}, {$where:{ completed: true }});
-	ok(res === true, "diff should be true");
+	assert.ok(res === true, "diff should be true");
 
 
 	res = algebra.difference({$where:{ completed: true }}, {$where:{ completed: true }});
-	equal(res, false);
+	assert.equal(res, false);
 
 	res = algebra.difference({$where:{ completed: true }}, {$where:{}});
-	equal(res, false);
+	assert.equal(res, false);
 
 	res = algebra.difference({$where:{ completed: true }}, {$where:{ userId: 5 }});
-	equal(res, false); // TODO: probably should be undefined
+	assert.equal(res, false); // TODO: probably should be undefined
 
 });
 
-test('set.difference({ function })', function() {
+QUnit.test('set.difference({ function })', function(assert) {
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"),
 		{
@@ -140,40 +140,40 @@ test('set.difference({ function })', function() {
 
 	var res = algebra.difference({$where:{ colors: ['red','blue'] }}, {$where:{ colors: ['blue'] }});
 
-	deepEqual(res, {$where:{ colors: [ 'red' ] }});
+	assert.deepEqual(res, {$where:{ colors: [ 'red' ] }});
 });
 
-test('set.union', function(){
+QUnit.test('set.union', function(assert) {
 
 	var algebra = new set.Algebra( new set.Translate("where","$where") );
 
 	// set / subset
 	var res = algebra.union({$where:{}}, {$where:{ completed: true }});
-	deepEqual(res , {$where:{}}, "set / subset");
+	assert.deepEqual(res , {$where:{}}, "set / subset");
 
 	res = algebra.union({$where:{ completed: true }}, {$where:{}});
-	deepEqual(res , {$where:{}}, "subset / set");
+	assert.deepEqual(res , {$where:{}}, "subset / set");
 
 	res = algebra.union({$where:{foo: "bar"}},{$where:{foo: "bar"}});
-	deepEqual(res, {$where:{foo: "bar"}}, "equal");
+	assert.deepEqual(res, {$where:{foo: "bar"}}, "equal");
 
 	res = algebra.union({$where:{foo: "bar"}},{$where:{foo: "zed"}});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = algebra.union({$where:{foo: "bar"}},{$where:{name: "A"}});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 });
 
-test('set.union Array', function(){
+QUnit.test('set.union Array', function(assert) {
 	var algebra = new set.Algebra( new set.Translate("where","$where") );
 
 	// set / subset
 	var res = algebra.union({$where:{foo: ["a","b"]}}, {$where:{ foo: ["a","c"] }});
-	deepEqual(res , {$where:{foo: ["a","b","c"]}}, "set / subset");
+	assert.deepEqual(res , {$where:{foo: ["a","b","c"]}}, "set / subset");
 
 });
 
-test('set.count', function(){
+QUnit.test('set.count', function(assert) {
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"),
 		{
@@ -184,46 +184,46 @@ test('set.count', function(){
 			}
 		});
 
-	ok( algebra.count({$where:{}}) === Infinity, "defaults to infinity");
-	ok( algebra.count({$where:{bar: "foo"}}) === Infinity, "defaults to infinity");
+	assert.ok( algebra.count({$where:{}}) === Infinity, "defaults to infinity");
+	assert.ok( algebra.count({$where:{bar: "foo"}}) === Infinity, "defaults to infinity");
 
-	equal( algebra.count({$where:{foo: "bar"}}), 100,  "works with a single value"  );
+	assert.equal( algebra.count({$where:{foo: "bar"}}), 100,  "works with a single value"  );
 });
 
-test('set.intersection', function(){
+QUnit.test('set.intersection', function(assert) {
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"));
 
 	var res = algebra.intersection({$where:{}}, {$where:{ completed: true }});
-	deepEqual(res , {$where:{ completed: true }}, "set / subset");
+	assert.deepEqual(res , {$where:{ completed: true }}, "set / subset");
 
 	res = algebra.intersection({$where:{ completed: true }}, {$where:{}});
-	deepEqual(res , {$where:{ completed: true }}, "subset / set");
+	assert.deepEqual(res , {$where:{ completed: true }}, "subset / set");
 
 	res = algebra.intersection({$where:{foo: "bar"}},{$where:{foo: "bar"}});
-	deepEqual(res, {$where:{foo: "bar"}}, "equal");
+	assert.deepEqual(res, {$where:{foo: "bar"}}, "equal");
 
 	res = algebra.intersection({$where:{foo: "bar"}},{$where:{foo: "zed"}});
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = algebra.intersection({$where:{foo: 'bar'}},{$where:{completed: true}});
-	deepEqual(res, {$where:{foo: 'bar', completed: true}}, 'intersection should combine definitions');
+	assert.deepEqual(res, {$where:{foo: 'bar', completed: true}}, 'intersection should combine definitions');
 });
 
 
-test('set.intersection Array', function(){
+QUnit.test('set.intersection Array', function(assert) {
 
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"));
 
 	// set / subset
 	var res = algebra.intersection({$where:{foo: ["a","b"]}}, {$where:{ foo: ["a","c"] }});
-	deepEqual(res , {$where:{foo: ["a"]}}, "intersection");
+	assert.deepEqual(res , {$where:{foo: ["a"]}}, "intersection");
 
 });
 
 
-test('set.has', function(){
+QUnit.test('set.has', function(assert) {
 
 	var algebra = new set.Algebra(
 		new set.Translate("where","$where"),
@@ -238,41 +238,41 @@ test('set.has', function(){
 		}
 	);
 
-	ok( algebra.has({$where: {someId: 5}}, {someId: 5, name: "foo"}), 'contains');
+	assert.ok( algebra.has({$where: {someId: 5}}, {someId: 5, name: "foo"}), 'contains');
 
 	var res;
 
 	res = algebra.has({$where:{ type: 'FOLDER' }}, { type: 'FOLDER' });
-	ok(res, 'equal sets');
+	assert.ok(res, 'equal sets');
 
 	res = algebra.has({$where:{ type: 'FOLDER', parentId: 5 }}, { type: 'FOLDER' });
-	equal(res, false, 'doesnt match');
+	assert.equal(res, false, 'doesnt match');
 
 	res = algebra.has({$where:{ type: 'FOLDER' }}, { type: 'FOLDER', parentId: 5 });
-	ok(true, 'is a subset');
+	assert.ok(true, 'is a subset');
 
 	res = algebra.has(
 		{$where:{ type: 'FOLDER', parentId: 7 }},
 		{ type: 'FOLDER', parentId: 5 }
 	);
-	ok(!res, 'different values');
+	assert.ok(!res, 'different values');
 
 	res = algebra.has(
 		{$where:{ type: 'FOLDER', count: 5 }},
 		{ type: 'FOLDER' },
 		{ count: ignoreProp }
 	);
-	ok(res, 'count ignored');
+	assert.ok(res, 'count ignored');
 
 	res = algebra.has(
 		{$where:{ type: 'FOLDER', kind: 'tree' }},
 		{ type: 'FOLDER', foo: true, bar: true }
 	);
-	ok(res, 'understands a subset');
+	assert.ok(res, 'understands a subset');
 
 	res = algebra.has(
 		{$where:{ type: 'FOLDER', foo: true, bar: true }},
 		{ type: 'FOLDER', kind: 'tree' }
 	);
-	ok(res,	'ignores nulls');
+	assert.ok(res,	'ignores nulls');
 });

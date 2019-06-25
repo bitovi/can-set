@@ -5,13 +5,13 @@ var set = require('../set-core'),
 
 QUnit.module("can-set props.limitOffset");
 
-test('offsetLimit set.equal', function(){
+QUnit.test('offsetLimit set.equal', function(assert) {
 
 	/*
 	 * X = [A0, ..., An]
 	 * Y = [A0, ..., An]
 	 */
-	ok(
+	assert.ok(
 		set.equal(
 			{offset: 0, limit: 99},
 			{offset: 0, limit: 99},
@@ -22,7 +22,7 @@ test('offsetLimit set.equal', function(){
 	 * X = [A0, ..., An]
 	 * Y = [A0, ..., A(n+1)]
 	 */
-	ok(
+	assert.ok(
 		!set.equal(
 			{offset: 0, limit: 100},
 			{offset: 0, limit: 101},
@@ -33,7 +33,7 @@ test('offsetLimit set.equal', function(){
 	 * X = [A0, ..., An]
 	 * Y = [A1, ..., An]
 	 */
-	ok(
+	assert.ok(
 		!set.equal(
 			{offset: 0, limit: 100},
 			{offset: 1, limit: 100},
@@ -44,7 +44,7 @@ test('offsetLimit set.equal', function(){
 
 
 
-test('offsetLimit set.union', function() {
+QUnit.test('offsetLimit set.union', function(assert) {
 	var prop = props.offsetLimit('offset', 'limit');
 
 
@@ -55,7 +55,7 @@ test('offsetLimit set.union', function() {
 	 * X U Y = [A0, ..., A101]
 	 */
 	var res = set.union({ offset: 0, limit: 100 }, { offset: 50, limit: 52 }, prop);
-	deepEqual(res, { offset: 0, limit: 102 }, "got a union");
+	assert.deepEqual(res, { offset: 0, limit: 102 }, "got a union");
 
 	/*
 	 * X = universal set
@@ -64,7 +64,7 @@ test('offsetLimit set.union', function() {
 	 * X U Y = X
 	 */
 	res = set.union({}, { offset: 0, limit: 10 }, prop);
-	deepEqual(res, {}, "universal set");
+	assert.deepEqual(res, {}, "universal set");
 
 	/*
 	 * X = [A100, ..., A199]
@@ -73,7 +73,7 @@ test('offsetLimit set.union', function() {
 	 * X U Y = [A100, ..., A299]
 	 */
 	res = set.union({offset: 100, limit: 100}, {offset: 200, limit: 100}, prop);
-	deepEqual(res, {offset:100, limit:200}, "no intersection");
+	assert.deepEqual(res, {offset:100, limit:200}, "no intersection");
 
 	/*
 	 * X = [A200, ..., A299]
@@ -82,7 +82,7 @@ test('offsetLimit set.union', function() {
 	 * X U Y = [A100, ..., A299]
 	 */
 	res = set.union({offset: 200, limit: 100}, {offset: 100, limit: 100}, prop);
-	deepEqual(res, {offset:100, limit:200}, "no intersection with either argument order");
+	assert.deepEqual(res, {offset:100, limit:200}, "no intersection with either argument order");
 
 
 
@@ -93,14 +93,14 @@ test('offsetLimit set.union', function() {
 	 * X U Y = [A100, ..., A299]
 	 */
 	res = set.union({offset: 100, limit: 110}, {offset: 200, limit: 100}, prop);
-	deepEqual(res, {offset:100, limit:200}, "sets can intersect with either argument order");
+	assert.deepEqual(res, {offset:100, limit:200}, "sets can intersect with either argument order");
 
 
 });
 
 
 
-test('rangeInclusive set.count', function(){
+QUnit.test('rangeInclusive set.count', function(assert) {
 	var prop = props.offsetLimit('offset', 'limit');
 
 	/*
@@ -108,10 +108,10 @@ test('rangeInclusive set.count', function(){
 	 * |X| = 100
 	 */
 	var res = set.count({ offset: 0, limit: 100 }, prop);
-	equal(res, 100, "count is right");
+	assert.equal(res, 100, "count is right");
 });
 
-test('rangeInclusive set.intersection', function(){
+QUnit.test('rangeInclusive set.intersection', function(assert) {
 	var prop = props.offsetLimit('offset', 'limit');
 
 	/*
@@ -121,5 +121,5 @@ test('rangeInclusive set.intersection', function(){
 	 * X ∩ Y = [A50, A99]
 	 */
 	var res = set.intersection({ offset: 0, limit: 100 }, { offset: 50, limit: 52 }, prop);
-	deepEqual(res, { offset: 50, limit: 50 }, "got a intersection");
+	assert.deepEqual(res, { offset: 50, limit: 50 }, "got a intersection");
 });

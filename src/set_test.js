@@ -4,7 +4,7 @@ var set = require('./set');
 
 QUnit.module("can-set");
 
-test('set.Algebra constructors', function(){
+QUnit.test('set.Algebra constructors', function(assert) {
 	var algebra = new set.Algebra(
 		set.props.rangeInclusive("start", "end"),
 		set.props.boolean('completed'),
@@ -12,9 +12,9 @@ test('set.Algebra constructors', function(){
 	);
 
 	var res = algebra.subset({ type: ['new'] },{type: ['new','prep']});
-	deepEqual(res, true, "enum");
+	assert.deepEqual(res, true, "enum");
 });
 
-test('set.clause', function(){
-	QUnit.ok(set.clause);
+QUnit.test('set.clause', function(assert) {
+	assert.ok(set.clause);
 });

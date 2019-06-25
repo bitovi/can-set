@@ -14,7 +14,7 @@ QUnit.module("can-set props.boolean");
  *
  *
  */
-test('boolean set.difference', function() {
+QUnit.test('boolean set.difference', function(assert) {
 
 	var prop = props.boolean('completed');
 
@@ -25,7 +25,7 @@ test('boolean set.difference', function() {
 	 * z ∈ (X / Y) | y.completed = false
 	 */
 	var res = set.difference({} , { completed: true }, prop);
-	deepEqual(res, {completed: false}, "inverse of true");
+	assert.deepEqual(res, {completed: false}, "inverse of true");
 
 	/*
 	 * x ∈ {} | x.completed = true OR x.completed = false
@@ -34,7 +34,7 @@ test('boolean set.difference', function() {
 	 * z ∈ (X / Y) | y.completed = false
 	 */
 	res = set.difference({}, { completed: false }, prop);
-	deepEqual(res, {completed: true} , "inverse of false");
+	assert.deepEqual(res, {completed: true} , "inverse of false");
 });
 
 /*
@@ -44,10 +44,10 @@ test('boolean set.difference', function() {
  *
  * (X U Y) = c
  */
-test('boolean set.union', function(){
+QUnit.test('boolean set.union', function(assert) {
 	var prop = props.boolean('completed');
 	var res = set.union({completed: false} , { completed: true }, prop);
-	deepEqual(res, {}, "union of true and false is entire boolean set");
+	assert.deepEqual(res, {}, "union of true and false is entire boolean set");
 });
 
 /*
@@ -69,29 +69,29 @@ test('boolean set.union', function(){
  *
  * Only requires that one property is always on an element
  */
-test('boolean set.intersection', function(){
+QUnit.test('boolean set.intersection', function(assert) {
 	var prop = props.boolean('completed');
 	var res = set.intersection({foo: "bar"} , { completed: true }, prop);
-	deepEqual(res, {foo: "bar", completed: true}, "intersection is false (#4)");
+	assert.deepEqual(res, {foo: "bar", completed: true}, "intersection is false (#4)");
 });
 
 
-test('strings false and true are treated as booleans', function(){
+QUnit.test('strings false and true are treated as booleans', function(assert) {
 	var prop = props.boolean('completed');
 	var res = set.subset({} , { completed: "true" }, prop);
-	ok(!res, "{} and 'true' not a subset");
+	assert.ok(!res, "{} and 'true' not a subset");
 	res = set.subset({} , { completed: "false" }, prop);
-	ok(!res, "{} and 'false' not a subset");
+	assert.ok(!res, "{} and 'false' not a subset");
 
 	res = set.subset({ completed: "true" }, {}, prop);
-	ok(res, "subset");
+	assert.ok(res, "subset");
 
 	res = set.subset({ completed: "false" }, {}, prop);
-	ok(res, "subset");
+	assert.ok(res, "subset");
 
 	res = set.union({completed: 'false'} , { completed: 'true' }, prop);
-	deepEqual(res, {}, "union of true and false is entire boolean set");
+	assert.deepEqual(res, {}, "union of true and false is entire boolean set");
 
 	res = set.equal({completed: false} , { completed: "false" }, prop);
-	ok(res, "false and 'false'");
+	assert.ok(res, "false and 'false'");
 });

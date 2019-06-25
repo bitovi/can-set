@@ -7,23 +7,23 @@ var each = require("can-util/js/each/each");
 
 QUnit.module("can-set props.sort");
 
-test('set.difference', function(){
+QUnit.test('set.difference', function(assert) {
 	var prop = props.sort('sort');
 
 	var res = set.difference({sort: "foo"}, { completed: true }, prop);
-	ok(res === true, "diff should be true");
+	assert.ok(res === true, "diff should be true");
 
 	res = set.difference({ completed: true }, { completed: true, sort: "foo" }, prop);
-	equal(res, false, "the same except for sort");
+	assert.equal(res, false, "the same except for sort");
 
 	res = set.difference({ completed: true }, { sort: "foo"}, prop);
-	equal(res, false);
+	assert.equal(res, false);
 
 	res = set.difference({ completed: true }, { foo: 'bar', sort: "foo" }, prop);
-	equal(res, false);
+	assert.equal(res, false);
 });
 
-test('set.difference({ function })', function() {
+QUnit.test('set.difference({ function })', function(assert) {
 	var algebra = new set.Algebra(
 		props.sort('sort'),
 		{
@@ -40,47 +40,47 @@ test('set.difference({ function })', function() {
 	var res = algebra.difference({ colors: ['red','blue'], sort: 'colors' },
 		{ colors: ['blue'] });
 
-	deepEqual(res, { colors: [ 'red' ], sort: 'colors' });
+	assert.deepEqual(res, { colors: [ 'red' ], sort: 'colors' });
 });
 
-test('set.union', function(){
+QUnit.test('set.union', function(assert) {
 	var prop = props.sort('sort');
 	// set / subset
 	var res = set.union({sort: "name"}, { completed: true }, prop);
-	deepEqual(res , {}, "set / subset sort left");
+	assert.deepEqual(res , {}, "set / subset sort left");
 
 	res = set.union({}, { completed: true, sort: "name" }, prop);
-	deepEqual(res , {}, "set / subset sort right");
+	assert.deepEqual(res , {}, "set / subset sort right");
 
 	res = set.union({ sort: "name" }, { completed: true, sort: "namer" }, prop);
-	deepEqual(res , {}, "set / subset both sorts");
+	assert.deepEqual(res , {}, "set / subset both sorts");
 
 	res = set.union({ completed: true }, {sort: "foo"}, prop);
-	deepEqual(res , {}, "subset / set");
+	assert.deepEqual(res , {}, "subset / set");
 
 	res = set.union({foo: "bar", sort: "foo"},{foo: "bar"}, prop);
-	deepEqual(res, {foo: "bar"}, "equal");
+	assert.deepEqual(res, {foo: "bar"}, "equal");
 
 	res = set.union({foo: "bar"},{foo: "zed", sort: "foo"}, prop);
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 
 	res = set.union({foo: "bar", sort: "foo"},{name: "A"}, prop);
-	ok(!res, "values not equal");
+	assert.ok(!res, "values not equal");
 });
 
-test('set.union Array', function(){
+QUnit.test('set.union Array', function(assert) {
 	var prop = props.sort('sort');
 	var res = set.union({foo: ["a","b"], sort: "foo"}, { foo: ["a","c"] },
 		prop);
 
-	deepEqual(res , {foo: ["a","b","c"]}, "set / subset");
+	assert.deepEqual(res , {foo: ["a","b","c"]}, "set / subset");
 });
 
-test('set.count', function(){
-	ok( set.count({ sort: 'name' }) === Infinity, "defaults to infinity");
-	ok( set.count({foo: "bar", sort: "foo"},{}) === Infinity, "defaults to infinity");
+QUnit.test('set.count', function(assert) {
+	assert.ok( set.count({ sort: 'name' }) === Infinity, "defaults to infinity");
+	assert.ok( set.count({foo: "bar", sort: "foo"},{}) === Infinity, "defaults to infinity");
 
-	equal( set.count({foo: "bar", sort: "foo"}, {
+	assert.equal( set.count({foo: "bar", sort: "foo"}, {
 		foo: function(){
 			return {
 				count: 100
@@ -89,32 +89,32 @@ test('set.count', function(){
 	}), 100, "works with a single value");
 });
 
-test('set.intersection', function(){
+QUnit.test('set.intersection', function(assert) {
 
 	var prop = props.sort('sort');
 
 	var res = set.intersection({} , { sort: 'name' }, prop);
-	deepEqual(res, {}, "no sort if only one is sorted");
+	assert.deepEqual(res, {}, "no sort if only one is sorted");
 
 	res = set.intersection({ sort: 'name' } , { sort: 'name' }, prop);
-	deepEqual(res, {sort: 'name'}, "");
+	assert.deepEqual(res, {sort: 'name'}, "");
 
 	res = set.intersection({type: 'new'} , { sort: 'name', userId: 5 }, prop);
-	deepEqual(res, {type: 'new', userId: 5 }, "");
+	assert.deepEqual(res, {type: 'new', userId: 5 }, "");
 
 	res = set.intersection({type: 'new', sort: "age"} , { sort: 'name', userId: 5 }, prop);
-	deepEqual(res, {type: 'new', userId: 5 }, "");
+	assert.deepEqual(res, {type: 'new', userId: 5 }, "");
 });
 
-test('set.intersection Array', function(){
+QUnit.test('set.intersection Array', function(assert) {
 	var prop = props.sort('sort');
 	var res = set.intersection({foo: ["a","b"], sort: 'foo'},
 		{ foo: ["a","c"] }, prop);
 
-	deepEqual(res , {foo: ["a"]}, "intersection");
+	assert.deepEqual(res , {foo: ["a"]}, "intersection");
 });
 
-test('set.subset', function(){
+QUnit.test('set.subset', function(assert) {
 	var ignoreProp = function(){ return true; };
 
 	var algebra = new set.Algebra(props.sort('sort'),{
@@ -124,41 +124,41 @@ test('set.subset', function(){
 		count: ignoreProp
 	});
 
-	ok( algebra.subset(
+	assert.ok( algebra.subset(
 		{ type : 'FOLDER', sort: "thing" },
 		{ type : 'FOLDER' } ), 'equal sets with sort on the left');
 
-	ok( algebra.subset(
+	assert.ok( algebra.subset(
 		{ type : 'FOLDER' },
 		{ type : 'FOLDER', sort: "thing" } ), 'equal sets with sort on the right');
 
-	ok( algebra.subset(
+	assert.ok( algebra.subset(
 		{ type : 'FOLDER', parentId : 5, sort: 'thing' },
 		{ type : 'FOLDER'} ), 'sub set with sort on the left');
 
-	ok( algebra.subset(
+	assert.ok( algebra.subset(
 		{ type : 'FOLDER', parentId : 5 },
 		{ type : 'FOLDER', sort: 'thing'} ), 'sub set with sort on the right');
 
-	ok(!algebra.subset(
+	assert.ok(!algebra.subset(
 		{ type: 'FOLDER', sort: 'thing' },
 		{ type: 'FOLDER', parentId: 5 }), 'wrong way with sort on the left');
 
-	ok(!algebra.subset(
+	assert.ok(!algebra.subset(
 		{ type: 'FOLDER' },
 		{ type: 'FOLDER', parentId: 5, sort: 'thing' }), 'wrong way with sort on the right');
 
-	ok(!algebra.subset(
+	assert.ok(!algebra.subset(
 		{ type: 'FOLDER', parentId: 7, sort: 'thing' },
 		{ type: 'FOLDER', parentId: 5 }), 'different values with sort on the left');
 
-	ok(!algebra.subset(
+	assert.ok(!algebra.subset(
 		{ type: 'FOLDER', parentId: 7 },
 		{ type: 'FOLDER', parentId: 5, sort: 'thing' }), 'different values with sort on the right');
 
 });
 
-test('set.subset with range', function(){
+QUnit.test('set.subset with range', function(assert) {
 	var algebra = new set.Algebra(props.sort('sort'),props.rangeInclusive('start','end'));
 
 	// add sort .. same .. different
@@ -233,7 +233,7 @@ test('set.subset with range', function(){
 	};
 	var assertSubset = function(methods, result){
 		var sets = make.apply(null, methods);
-		equal( algebra.subset(sets.left, sets.right), result, JSON.stringify(sets.left)+" ⊂ "+JSON.stringify(sets.right)+" = "+result );
+		assert.equal( algebra.subset(sets.left, sets.right), result, JSON.stringify(sets.left)+" ⊂ "+JSON.stringify(sets.right)+" = "+result );
 	};
 
 	assertSubset([sets.superRight, range.right, sort.right], false);
@@ -244,25 +244,25 @@ test('set.subset with range', function(){
 	assertSubset([sets.same, range.superRight, sort.same], true);
 });
 
-test("set.index", function(){
+QUnit.test("set.index", function(assert) {
 	var algebra = new set.Algebra(props.sort('sort'));
 
 	var index = algebra.index(
 		{sort: "name"},
 		[{id: 1, name:"g"}, {id: 2, name:"j"}, {id: 3, name:"m"}, {id: 4, name:"s"}],
 		{name: "k"});
-	equal(index, 2);
+	assert.equal(index, 2);
 });
 
 
-test("set.getSubset (#14)", function(){
+QUnit.test("set.getSubset (#14)", function(assert) {
 	var algebra = new set.Algebra(props.sort('sort'));
 	var subset = algebra.getSubset({sort: "name"},{},[{id: 1, name:"s"}, {id: 2, name:"j"}, {id: 3, name:"m"}, {id: 4, name:"g"}]);
-	deepEqual(subset, [ {id: 4, name:"g"},{id: 2, name:"j"}, {id: 3, name:"m"},{id: 1, name:"s"}]);
+	assert.deepEqual(subset, [ {id: 4, name:"g"},{id: 2, name:"j"}, {id: 3, name:"m"},{id: 1, name:"s"}]);
 });
 
 
-test("set.getUnion", function(){
+QUnit.test("set.getUnion", function(assert) {
 	var algebra = new set.Algebra(
 		props.sort('sort'),
 		props.boolean('complete')
@@ -275,14 +275,14 @@ test("set.getUnion", function(){
 		[{id: 4, name:"g", complete: true}, {id: 3, name:"m", complete: true}],
 		[{id: 2, name:"j", complete: false},{id: 1, name:"s", complete: false} ]);
 
-	deepEqual(union, [
+	assert.deepEqual(union, [
 		{id: 4, name:"g", complete: true},
 		{id: 2, name:"j", complete: false},
 		{id: 3, name:"m", complete: true},
 		{id: 1, name:"s",complete: false}]);
 });
 
-test("set.union keeps sort", function(){
+QUnit.test("set.union keeps sort", function(assert) {
 	var algebra = new set.Algebra(
 		props.sort('sort'),
 		props.boolean('complete')
@@ -292,53 +292,53 @@ test("set.union keeps sort", function(){
 		{sort: "name", complete: true},
 		{sort: "name", complete: false});
 
-	deepEqual(union, {sort: "name"});
+	assert.deepEqual(union, {sort: "name"});
 });
 
-test("paginated and sorted is subset (#17)", function(){
+QUnit.test("paginated and sorted is subset (#17)", function(assert) {
 	var algebra = new set.Algebra(
 		props.sort('sort'),
 		props.rangeInclusive('start','end')
 	);
 
 	var res = algebra.subset({start: 0, end: 100, sort: "name"},{start: 0, end: 100, sort: "name"});
-	equal(res, true, "parent:paginate+order child:paginate+order (same set)");
+	assert.equal(res, true, "parent:paginate+order child:paginate+order (same set)");
 
 	res = algebra.subset({start: 0, end: 100, sort: "name"},{start: 0, end: 100, sort: "age"});
-	equal(res, false, "parent:paginate+order child:paginate+order (different order)");
+	assert.equal(res, false, "parent:paginate+order child:paginate+order (different order)");
 
 	// REMOVE FROM THE parent
 	// parent:order
 	res = algebra.subset({start: 0, end: 100, sort: "name"},{sort: "name"});
-	equal(res, true, "parent:order child:paginate+order");
+	assert.equal(res, true, "parent:order child:paginate+order");
 
 	res = algebra.subset({sort: "name"},{sort: "name"});
-	equal(res, true, "parent:order child:order (same)");
+	assert.equal(res, true, "parent:order child:order (same)");
 	res = algebra.subset({sort: "name"},{sort: "age"});
-	equal(res, true, "parent:order child:order (different)");
+	assert.equal(res, true, "parent:order child:order (different)");
 
 	res = algebra.subset({start: 0, end: 100},{sort: "name"});
-	equal(res, true, "parent:order child:paginate");
+	assert.equal(res, true, "parent:order child:paginate");
 
 	res = algebra.subset({start: 0, end: 100, sort: "age"},{sort: "name"});
-	equal(res, true, "parent:order child:paginate+order");
+	assert.equal(res, true, "parent:order child:paginate+order");
 
 	// parent:paginate
 	res = algebra.subset({start: 0, end: 100, sort: "name"},{start: 0, end: 100});
-	equal(res, false, "parent:paginate child:paginate+order");
+	assert.equal(res, false, "parent:paginate child:paginate+order");
 
 	res = algebra.subset({sort: "name"},{start: 0, end: 100});
-	equal(res, false, "parent:paginate child:order (same)");
+	assert.equal(res, false, "parent:paginate child:order (same)");
 
 
 	res = algebra.subset({start: 0, end: 100, sort: "name"},{});
-	equal(res, true, "parent:-- child:paginate+order");
+	assert.equal(res, true, "parent:-- child:paginate+order");
 
 
 
 	res = algebra.subset({start: 10, end: 90, sort: "name"},{start: 0, end: 100, sort: "name"});
-	equal(res, true, "child in smaller range, same sort");
+	assert.equal(res, true, "child in smaller range, same sort");
 
 	res = algebra.subset({start: 10, end: 90, sort: "name"},{start: 0, end: 100, sort: "age"});
-	equal(res, false, "child in smaller range, but different sort");
+	assert.equal(res, false, "child in smaller range, but different sort");
 });
